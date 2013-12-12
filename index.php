@@ -13,8 +13,19 @@
 				level= $(this).attr("level") + 1;
 				$("p").filter(function() {
 				    return  $(this).attr("level") == level || $(this).attr("parent") == child;
-				}).fadeToggle();
+				}).fadeChild();
 			});
+
+			jQuery.fn.fadeChild = function() {
+   				if ($(this).is(":visible")) {
+   					$("p").filter(function() {
+				    return  $(this).attr("level") > level ;
+				    }).fadeOut();
+   				} else {
+   					$(this).fadeIn();
+   				}
+			};
+			
 		});
 		</script>
 
