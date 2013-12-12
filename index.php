@@ -1,40 +1,64 @@
-<?php
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-latest.min.js"
+		        type="text/javascript"></script>
+		<script type="text/javascript">
+		$( document ).ready(function() {
+			$("p").filter(function() {
+			    return  $(this).attr("level") > 0;
+			}).hide();
 
-$handle = @fopen("ctc.txt", "r");
-$child = null;
-$level= 0;
+			$( "p" ).click(function() {
+				child= $(this).attr("child");
+				level= $(this).attr("level") + 1;
+				$("p").filter(function() {
+				    return  $(this).attr("level") == level || $(this).attr("parent") == child;
+				}).fadeToggle();
+			});
+		});
+		</script>
 
-if ($handle) {
-    while (($buffer = fgets($handle, 4096)) !== false) {
-		preg_match('#\](.*)#', $buffer, $text);
-		preg_match("/"."(\\[)(\\d+)(,)(\\d+)(\\])"."/is", $buffer, $id);
+		<style>
+		body
+		{
+		direction:rtl;
+		}
+		</style>
+	</head>
+	<body>
 
-		$parent = $id[4];
+	<?php
+	$handle = @fopen("ctc.txt", "r");
+	$child = null;
+	$level= 0;
 
-		if ($parent==$child)
-			$level++;
+	if ($handle) {
+	    while (($buffer = fgets($handle, 4096)) !== false) {
+			preg_match('#\](.*)#', $buffer, $text);
+			preg_match("/"."(\\[)(\\d+)(,)(\\d+)(\\])"."/is", $buffer, $id);
 
-		if (isset($lvlArr[$parent]))
-			$level=$lvlArr[$parent] +1;
+			$parent = $id[4];
 
-		for ($x=0; $x<=$level; $x++) 
-			echo ("-");
- 	
-		
-		$child = $id[2];
-		$lvlArr[$child]=$level;
+			if ($parent==$child)
+				$level++;
 
-		echo (" ". $child ."," .$parent .":".$text[1]."</br>");
-		
-		
+			if (isset($lvlArr[$parent]))
+				$level=$lvlArr[$parent] +1;
 
-    }
-    if (!feof($handle)) {
-        echo "Error: unexpected fgets() fail\n";
-    }
-    fclose($handle);
-}
+			$child = $id[2];
+			$lvlArr[$child]=$level;
 
-var_dump($lvlArr);
-?>
+			echo ("<p style='cursor:pointer' level='".$level ."'' child='". $child ."' parent='" .$parent ."'>");
+			for ($i = 0; $i <= $level; $i++) 
+	    		echo "-";
+	    	echo ($text[1]."</p>");
 
+	    }
+	    if (!feof($handle)) {
+	        echo "Error: unexpected fgets() fail\n";
+	    }
+	    fclose($handle);
+	}
+	?>
+	</body>
+</html>
