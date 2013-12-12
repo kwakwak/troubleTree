@@ -48,9 +48,8 @@
 			$child = $id[2];
 			$lvlArr[$child]=$level;
 
-			echo ("<p style='cursor:pointer' level='".$level ."'' child='". $child ."' parent='" .$parent ."'>");
-			for ($i = 0; $i <= $level; $i++) 
-	    		echo "-";
+			echo ("<p style='padding-right:".$level . "em' level='".$level ."'' child='". $child ."' parent='" .$parent ."'>");
+
 	    	echo ($text[1]."</p>");
 
 	    }
