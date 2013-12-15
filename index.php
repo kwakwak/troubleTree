@@ -1,30 +1,46 @@
 <html>
 	<head>
+		<meta charset="windows-1255">
 		<script src="http://code.jquery.com/jquery-latest.min.js"
 		        type="text/javascript"></script>
 		<script type="text/javascript">
 		$( document ).ready(function() {
+
+			var level =0;
 			$("p").filter(function() {
 			    return  $(this).attr("level") > 0;
 			}).hide();
 
 			$( "p" ).click(function() {
-				child= $(this).attr("child");
-				level= $(this).attr("level") + 1;
+				$(this).find('img').toggle();
+				var child= parseInt($(this).attr("child"));
+				var level= parseInt($(this).attr("level")) +1;
 				$("p").filter(function() {
-				    return  $(this).attr("level") == level || $(this).attr("parent") == child;
-				}).fadeChild();
+				    return  $(this).attr("parent") == child;
+				}).fadeChild(level);
+				
+				
 			});
 
-			jQuery.fn.fadeChild = function() {
+			jQuery.fn.fadeChild = function(level) {
    				if ($(this).is(":visible")) {
-   					$("p").filter(function() {
-				    return  $(this).attr("level") > level ;
-				    }).fadeOut();
+   					$(this).fadeOut().changeToExpand();
+   					// hide children of children
+					$("p").filter(function() {
+					    return  $(this).attr("level") > level;
+					}).fadeOut().changeToExpand();
+					//
+
    				} else {
    					$(this).fadeIn();
    				}
 			};
+
+			jQuery.fn.changeToExpand = function() {
+				$(this).find("img.collapse").hide();
+				$(this).find("img.expand").show();
+			};
+
 			
 		});
 		</script>
@@ -39,16 +55,14 @@
 	<body>
 
 	<?php
-	$handle = @fopen("ctc.txt", "r");
-	$child = null;
-	$level= 0;
+	
+		$child = null;
+		$level= 0;
 
-	if ($handle) {
-	    while (($buffer = fgets($handle, 4096)) !== false) {
-			preg_match('#\](.*)#', $buffer, $text);
-			preg_match("/"."(\\[)(\\d+)(,)(\\d+)(\\])"."/is", $buffer, $id);
+		if (($handle = fopen("ctc.csv", "r")) !== FALSE) {
+		    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 
-			$parent = $id[4];
+			$parent = $data[1];
 
 			if ($parent==$child)
 				$level++;
@@ -56,19 +70,17 @@
 			if (isset($lvlArr[$parent]))
 				$level=$lvlArr[$parent] +1;
 
-			$child = $id[2];
+			$child = $data[0];
 			$lvlArr[$child]=$level;
 
 			echo ("<p style='padding-right:".$level . "em' level='".$level ."'' child='". $child ."' parent='" .$parent ."'>");
-
-	    	echo ($text[1]."</p>");
-
-	    }
-	    if (!feof($handle)) {
-	        echo "Error: unexpected fgets() fail\n";
-	    }
-	    fclose($handle);
-	}
+			echo (" <img src='expand.png' class='expand'> ");
+			echo (" <img src='collapse.png' class='collapse' style='display:none'> ");
+	    	echo ($data[2]."</p>");
+		     
+		    }
+		    fclose($handle);
+		}
 	?>
 	</body>
 </html>
