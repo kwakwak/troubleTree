@@ -6,41 +6,26 @@
 		<script type="text/javascript">
 		$( document ).ready(function() {
 
-			var level =0;
 			$("p").filter(function() {
 			    return  $(this).attr("level") > 0;
 			}).hide();
 
 			$( "p" ).click(function() {
-				$(this).find('img').toggle();
-				var level= parseInt($(this).attr("level")) +1;
-
 				var child= parseInt($(this).attr("child"));
-				$("p").filter(function() {
-				    return  $(this).attr("parent") == child;
-				}).fadeChild();
-				
-				
+				$(this).find('img').toggle().findChild(child).fadeChild(child);
 			});
 
-			jQuery.fn.fadeChild = function() {
+			jQuery.fn.fadeChild = function(child) {
    				if ($(this).is(":visible")) {
-   					$(this).fadeOut().changeToExpand();
-   					
-   					// hide children of children
-   					var child= parseInt($(this).attr("child"));
-   					childObj = $(this).findChild(child);
-   					
-   					while (childObj.is(":visible"))
-   					{
-						childObj.fadeOut().changeToExpand();
-						var child= parseInt(childObj.attr("child"));
-						childObj = $(this).findChild(child);
-   					}
-					//
+
+   				childObj = $(this).findChild(child);
+
+				childObj.each(function() {
+					$(this).loopChild();
+				});
 
    				} else {
-   					$(this).fadeIn();
+   					$(this).fadeIn();	
    				}
 			};
 
@@ -53,6 +38,18 @@
 				return $("p").filter(function() {
 				     return  $(this).attr("parent") == child;
 				});
+			};
+
+			jQuery.fn.loopChild = function(childObj) {
+			
+					childObj = $(this);
+	
+				if (childObj.is(":visible"))
+					{	
+					childObj.fadeOut().changeToExpand();
+					var child= parseInt(childObj.attr("child"));
+					$(this).findChild(child).loopChild(this);
+					}
 			};
 
 			
