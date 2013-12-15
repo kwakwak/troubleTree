@@ -48,7 +48,11 @@
 					{	
 					childObj.fadeOut().changeToExpand();
 					var child= parseInt(childObj.attr("child"));
-					$(this).findChild(child).loopChild(this);
+					childObj = $(this).findChild(child);
+
+					childObj.each(function() {
+					$(this).loopChild();
+				});
 					}
 			};
 
