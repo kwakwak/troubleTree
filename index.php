@@ -1,6 +1,7 @@
+<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="windows-1255">
+	<meta charset="utf-8">
 	<script src="http://code.jquery.com/jquery-latest.min.js"
 	type="text/javascript"></script>
 	<script type="text/javascript">
@@ -74,7 +75,7 @@ p {
 
 	$child = null;
 	$level= 0;
-
+	setlocale(LC_ALL, 'he_IL.UTF8');
 	if (($handle = fopen("ctc.csv", "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 
@@ -89,12 +90,14 @@ p {
 			$child = $data[0];
 			$lvlArr[$child]=$level;
 
-			echo ("<p style='padding-right:".$level . "em'  
-				child='". $child ."' 
-				parent='" .$parent ."'>");
-			echo (" <img src='expand.png' class='expand'> ");
-			echo (" <img src='collapse.png' class='collapse' style='display:none'> ");
-			echo ($data[2]."</p>");
+			if (!empty($data[2])) {
+				echo ("<p style='padding-right:".$level . "em'  
+					child='". $child ."' 
+					parent='" .$parent ."'>");
+				echo (" <img src='expand.png' class='expand'> ");
+				echo (" <img src='collapse.png' class='collapse' style='display:none'> ");
+				echo ($data[2]."</p>");
+			}
 
 		}
 		fclose($handle);
